@@ -37,8 +37,11 @@
                 <td><?php echo $row['phone'] ?></td>
                 <td><img style="width:100px" src="img/<?php echo $row['image'] ?>" alt=""></td>
                 <td>
-                    <a href="update.php">Sửa</a>
-                    <a href="delete.php">xóa</a>
+                    <a href="update.php?id=<?php echo $row['id'] ?>">Sửa</a>
+                </td>
+                <td>
+                    <a onclick="return confirm('Bạn có muốn xóa không')" 
+                    href="delete.php?id=<?php echo $row['id'] ?>">Xóa</a>
                 </td>
             </tr>
             <?php
