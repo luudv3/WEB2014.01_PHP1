@@ -1,4 +1,13 @@
 <?php
+    session_start();
+    // kiểm tra nếu người dùng chưa đăng nhập, chuyển hướng tới trang login
+
+    if (!isset($_SESSION['user']) && !isset($_SESSION['password'])) {
+        header('location: login.php');
+        exit();
+    }
+?>
+<?php
     // Kết nối tới CSDL
     include_once 'connection.php';
     // kiểm tra xem id có tồn tại hay không
@@ -25,7 +34,26 @@
         <p>Quê quán</p> <input type="text" name="queQuan" value="<?php echo $resuilt['queQuan'] ?>">
         <p>Số điện thoai</p> <input type="text" name="phone" value="<?php echo $resuilt['phone'] ?>">
         <p>Ảnh</p> <img style="width:100px" src="img/<?php echo $resuilt['image'] ?>" alt="">
-        <br>
+        <input type="file" name="fileToUpload">
+        <p>ID Phòng Ban</p>
+         <!-- Sử dụng select để chọn id của phòng ban -->
+         <select name="id_phongBan" id="">
+            <?php
+                // Kết nối tới CSDL
+                include 'connection.php';
+                $sql = "SELECT * FROM phongban";
+                $kq = $conn->query($sql);
+                foreach($kq as $row){
+            ?>
+            <!-- Hiển thị danh sách các phòng để chọn -->
+            <option value="<?php echo $row['id_phongBan']?>" 
+            <?php echo $row['id_phongBan'] == $resuilt['id_phongBan'] ? "selected" : ""  ?>>
+                        <?php echo $row['ten_phongBan'] ?>
+            </option>
+            <?php
+                }
+            ?>
+         </select>
         <!-- Nút gửi thông tin -->
         <input type="submit" value="cập nhật" name="gui">
     </form>
@@ -37,7 +65,24 @@
             $namSinh = $_POST['namSinh'];
             $queQuan = $_POST['queQuan'];
             $phone = $_POST['phone'];
-            $name_img = $resuilt['image'];
+            $id_phongBan = $_POST['id_phongBan'];
+            $img = $resuilt['image'];
+
+            if (isset($_FILES['fileToUpload'])){
+                //file chứa ảnh
+                $target_dir = "img/";
+                // lấy tên file ảnh
+                $img = $_FILES["fileToUpload"] ["name"];
+                // tạo đường dẫn ảnh
+                $target_img = $target_dir . $img;
+            
+                if(move_uploaded_file($_FILES['fileToUpload'] ['tmp_name'], $target_img )){
+                    echo "Tệp" .htmlspecialchars($img) . "đã tải lên thành công";
+                }
+                else {
+                    echo "đã xảy ra lỗi khi tải lên";
+                }
+            }
 
             // Kết nối CSDL
             // include_once 'connection.php';
@@ -49,7 +94,7 @@
 
             $sql_update = "UPDATE nhanvien SET ten_nhanVien = '$ten_nhanVien',
             namSinh = '$namSinh',queQuan = '$queQuan', phone = '$phone', 
-            image = '$name_img' WHERE id = '$id'";
+            image = '$img', id_phongBan = '$id_phongBan' WHERE id = '$id'";
             $resuilt = $conn->prepare($sql_update);
             if($resuilt->execute()){
                 header('location: index.php');
