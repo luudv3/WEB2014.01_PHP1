@@ -68,7 +68,7 @@
             $id_phongBan = $_POST['id_phongBan'];
             $img = $resuilt['image'];
 
-            if (isset($_FILES['fileToUpload'])){
+            if (isset($_FILES['fileToUpload'])&& $_FILES["fileToUpload"]["tmp_name"]){
                 //file chứa ảnh
                 $target_dir = "img/";
                 // lấy tên file ảnh
